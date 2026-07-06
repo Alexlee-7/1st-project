@@ -1,4 +1,4 @@
-const CACHE_NAME = 'checklist-cache-v1';
+const CACHE_NAME = 'checklist-cache-v2';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -22,14 +22,16 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// 네트워크 우선 전략: 인터넷이 연결되어 있으면 항상 최신 파일을 받아오고,
+// 오프라인일 때만 예전에 저장해둔 캐시를 보여줌
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).then((response) => {
+    fetch(event.request)
+      .then((response) => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
-      }).catch(() => cached);
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });
