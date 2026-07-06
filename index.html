@@ -22,6 +22,10 @@
     --sub-soft: #EFE7DC;
     --line: #D8DDD5;
     --danger: #B5533C;
+    --work: #3D5A80;
+    --work-soft: #DDE6F0;
+    --project: #8B6F47;
+    --project-soft: #EFE5D6;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html,body{margin:0; padding:0; height:100%;}
@@ -52,14 +56,25 @@
     font-family:'IBM Plex Mono', monospace;
     font-size:12px; color:var(--ink-soft);
   }
+  .sync-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:6px 20px 0;
+  }
+  .sync-bar .user-label{
+    font-size:11px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace;
+  }
+  #logout-btn{
+    border:none; background:none; color:var(--ink-soft); font-size:11px;
+    cursor:pointer; text-decoration:underline; display:none;
+  }
   nav.tabs{
     display:flex; border-bottom:1px solid var(--line);
     background:var(--paper); position:sticky; top:64px; z-index:5;
   }
   nav.tabs button{
     flex:1; padding:12px 0; border:none; background:none;
-    font-family:'IBM Plex Sans KR', sans-serif; font-size:14px; font-weight:500;
-    color:var(--ink-soft); cursor:pointer; position:relative;
+    font-family:'IBM Plex Sans KR', sans-serif; font-size:13.5px; font-weight:500;
+    color:var(--ink-soft); cursor:pointer; position:relative; white-space:nowrap;
   }
   nav.tabs button.active{ color:var(--accent); font-weight:600; }
   nav.tabs button.active::after{
@@ -71,18 +86,25 @@
   .view.active{ display:block; }
 
   /* ---- LIST VIEW ---- */
-  #list-container{ padding:8px 16px 4px; }
+  .list-container{ padding:8px 16px 4px; }
   .empty-hint{
     text-align:center; color:var(--ink-soft); font-size:13px;
-    padding:40px 20px; line-height:1.6;
+    padding:40px 20px; line-height:1.6; white-space:pre-line;
   }
   .task{
     border-bottom:1px dashed var(--line);
     padding:12px 0 10px;
   }
   .task-row{
-    display:flex; align-items:flex-start; gap:10px;
+    display:flex; align-items:flex-start; gap:8px;
   }
+  .reorder-btns{
+    display:flex; flex-direction:column; gap:0px; margin-top:0px;
+  }
+  .reorder-btn{
+    font-size:9px; padding:1px 4px; color:var(--ink-soft); line-height:1.3;
+  }
+  .reorder-btn:disabled{ opacity:.25; }
   .checkbox{
     width:22px; height:22px; min-width:22px; margin-top:2px;
     border:2px solid var(--accent); border-radius:6px;
@@ -96,18 +118,24 @@
     flex:1; font-size:15.5px; line-height:1.5; padding-top:1px;
     word-break: break-word;
   }
+  .edit-input{
+    flex:1; font-size:15.5px; font-family:inherit; border:none;
+    border-bottom:1.5px solid var(--accent); background:transparent;
+    color:var(--ink); padding:1px 2px;
+  }
+  .edit-input:focus{ outline:none; }
   .task-actions{ display:flex; gap:2px; }
   .icon-btn{
     border:none; background:none; cursor:pointer; color:var(--ink-soft);
-    padding:4px; font-size:16px; line-height:1; border-radius:6px;
+    padding:4px; font-size:15px; line-height:1; border-radius:6px;
   }
   .icon-btn:active{ background:var(--accent-soft); }
   .subtasks{
-    margin:8px 0 0 32px; padding-left:12px;
+    margin:8px 0 0 30px; padding-left:12px;
     border-left:2px solid var(--sub-soft);
   }
   .subtask{
-    display:flex; align-items:flex-start; gap:8px;
+    display:flex; align-items:flex-start; gap:6px;
     padding:6px 0;
   }
   .subtask .checkbox{
@@ -115,6 +143,7 @@
     border-color:var(--sub);
   }
   .subtask .task-text{ font-size:14px; color:var(--ink); }
+  .subtask .edit-input{ font-size:14px; }
   .subtask-input-row{
     display:flex; align-items:center; gap:8px; padding:6px 0;
   }
@@ -135,12 +164,12 @@
   .new-task-row .checkbox{
     border-style:dashed; border-color:var(--ink-soft); opacity:.6;
   }
-  #new-task-input{
+  .new-task-input{
     flex:1; border:none; font-size:15.5px; font-family:inherit;
     background:transparent; color:var(--ink); padding:4px 2px;
   }
-  #new-task-input:focus{ outline:none; }
-  #new-task-input::placeholder{ color:#A9B3AC; }
+  .new-task-input:focus{ outline:none; }
+  .new-task-input::placeholder{ color:#A9B3AC; }
 
   /* ---- CALENDAR VIEW ---- */
   #calendar-container{ padding:16px 16px 4px; }
@@ -191,12 +220,19 @@
   }
   .record-item .time{
     font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--accent);
-    min-width:48px;
+    min-width:44px;
   }
   .record-item .text{ font-size:14px; flex:1; }
   .record-item .text .parent-tag{
     font-size:11px; color:var(--sub); display:block; margin-top:1px;
   }
+  .list-badge{
+    font-size:10px; padding:2px 7px; border-radius:20px; font-weight:600;
+    white-space:nowrap;
+  }
+  .list-badge-personal{ background:var(--accent-soft); color:var(--accent); }
+  .list-badge-work{ background:var(--work-soft); color:var(--work); }
+  .list-badge-project{ background:var(--project-soft); color:var(--project); }
   .no-record{ color:var(--ink-soft); font-size:13px; padding:12px 0; }
 
   ::-webkit-scrollbar{ width:0; }
@@ -219,17 +255,6 @@
     cursor:pointer;
   }
   #login-btn:active{ background:var(--accent-soft); }
-  .sync-bar{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:6px 20px 0;
-  }
-  .sync-bar .user-label{
-    font-size:11px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace;
-  }
-  #logout-btn{
-    border:none; background:none; color:var(--ink-soft); font-size:11px;
-    cursor:pointer; text-decoration:underline; display:none;
-  }
 </style>
 </head>
 <body>
@@ -251,16 +276,36 @@
     <button id="logout-btn">로그아웃</button>
   </div>
   <nav class="tabs">
-    <button id="tab-list" class="active">할 일</button>
-    <button id="tab-calendar">기록</button>
+    <button class="active" data-tab="personal">개인</button>
+    <button data-tab="work">직장</button>
+    <button data-tab="project">프로젝트</button>
+    <button data-tab="calendar">기록</button>
   </nav>
   <main>
-    <section id="view-list" class="view active">
-      <div id="list-container"></div>
+    <section id="view-personal" class="view active" data-list="personal">
+      <div class="list-container"></div>
       <div style="padding:0 16px;">
         <div class="new-task-row">
           <div class="checkbox"></div>
-          <input id="new-task-input" type="text" placeholder="할 일을 입력하고 Enter" autocomplete="off">
+          <input class="new-task-input" type="text" placeholder="할 일을 입력하고 Enter" autocomplete="off">
+        </div>
+      </div>
+    </section>
+    <section id="view-work" class="view" data-list="work">
+      <div class="list-container"></div>
+      <div style="padding:0 16px;">
+        <div class="new-task-row">
+          <div class="checkbox"></div>
+          <input class="new-task-input" type="text" placeholder="업무를 입력하고 Enter" autocomplete="off">
+        </div>
+      </div>
+    </section>
+    <section id="view-project" class="view" data-list="project">
+      <div class="list-container"></div>
+      <div style="padding:0 16px;">
+        <div class="new-task-row">
+          <div class="checkbox"></div>
+          <input class="new-task-input" type="text" placeholder="프로젝트 이름을 입력하고 Enter" autocomplete="off">
         </div>
       </div>
     </section>
@@ -284,10 +329,35 @@ const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 try{ await enableIndexedDbPersistence(db); }catch(e){ /* 여러 탭이 열려있으면 실패할 수 있음, 무시해도 됨 */ }
 
-let state = { tasks: [], records: [] };
+const LISTS = ['personal','work','project'];
+const LIST_LABELS = { personal:'개인', work:'직장', project:'프로젝트' };
+
+function emptyState(){
+  return { lists: { personal:{tasks:[]}, work:{tasks:[]}, project:{tasks:[]} }, records: [] };
+}
+let state = emptyState();
 let currentUid = null;
 let unsubscribeSnap = null;
 
+// 화면에만 존재하는 임시 상태 (동기화 데이터에는 저장 안 함)
+let editingKey = null;      // "listId:taskId" 또는 "listId:taskId:subId"
+let subInputOpenFor = null; // "listId:taskId"
+
+function migrate(data){
+  if(data.tasks && !data.lists){
+    // 이전 버전(단일 목록) 데이터를 개인 목록으로 이전
+    return {
+      lists: { personal:{ tasks:data.tasks }, work:{ tasks:[] }, project:{ tasks:[] } },
+      records: (data.records||[]).map(r => ({ ...r, listId: r.listId || 'personal' }))
+    };
+  }
+  data.lists = data.lists || {};
+  LISTS.forEach(id => { if(!data.lists[id]) data.lists[id] = { tasks: [] }; });
+  data.records = data.records || [];
+  return data;
+}
+
+/* ---------- Auth ---------- */
 const loginOverlay = document.getElementById('login-overlay');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
@@ -309,38 +379,32 @@ onAuthStateChanged(auth, (user) => {
     const ref = doc(db, 'users', currentUid);
     unsubscribeSnap = onSnapshot(ref, (snap) => {
       if(snap.exists()){
-        const data = snap.data();
-        state.tasks = data.tasks || [];
-        state.records = data.records || [];
+        state = migrate(snap.data());
       } else {
-        state = { tasks: [], records: [] };
+        state = emptyState();
         setDoc(ref, state);
       }
-      renderList();
-      if(document.getElementById('view-calendar').classList.contains('active')) renderCalendar();
-    }, (err) => {
-      console.error(err);
-    });
+      renderAll();
+    }, (err) => console.error(err));
   } else {
     currentUid = null;
-    state = { tasks: [], records: [] };
+    state = emptyState();
     loginOverlay.style.display = 'flex';
     logoutBtn.style.display = 'none';
-    renderList();
+    renderAll();
   }
 });
 
 function save(){
   if(!currentUid) return;
   const ref = doc(db, 'users', currentUid);
-  // 화면 전용 임시 상태(하위 할일 입력창 열림 여부 등)는 동기화 데이터에서 제외
-  const cleanTasks = state.tasks.map(t => ({
-    id: t.id,
-    text: t.text,
-    subtasks: (t.subtasks || []).map(s => ({ id: s.id, text: s.text }))
-  }));
-  setDoc(ref, { tasks: cleanTasks, records: state.records }).catch(err => console.error(err));
+  setDoc(ref, { lists: state.lists, records: state.records }).catch(err => console.error(err));
 }
+function renderAll(){
+  LISTS.forEach(renderListView);
+  if(document.getElementById('view-calendar').classList.contains('active')) renderCalendar();
+}
+
 function uid(){
   return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 }
@@ -359,84 +423,116 @@ function renderTodayLabel(){
 }
 
 /* ---------- Tabs ---------- */
-const tabList = document.getElementById('tab-list');
-const tabCal = document.getElementById('tab-calendar');
-const viewList = document.getElementById('view-list');
-const viewCal = document.getElementById('view-calendar');
-tabList.onclick = () => switchTab('list');
-tabCal.onclick = () => switchTab('calendar');
-function switchTab(name){
-  const isList = name === 'list';
-  tabList.classList.toggle('active', isList);
-  tabCal.classList.toggle('active', !isList);
-  viewList.classList.toggle('active', isList);
-  viewCal.classList.toggle('active', !isList);
-  if(!isList) renderCalendar();
+const tabButtons = document.querySelectorAll('nav.tabs button');
+tabButtons.forEach(btn => btn.onclick = () => switchTab(btn.dataset.tab));
+function switchTab(tab){
+  tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = tab === 'calendar' ? document.getElementById('view-calendar') : document.getElementById('view-' + tab);
+  target.classList.add('active');
+  if(tab === 'calendar') renderCalendar();
 }
+
+/* ---------- New task inputs ---------- */
+document.querySelectorAll('.new-task-input').forEach(input => {
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && input.value.trim()){
+      const listId = input.closest('.view').dataset.list;
+      state.lists[listId].tasks.push({ id: uid(), text: input.value.trim(), subtasks: [] });
+      save();
+      input.value = '';
+      renderListView(listId);
+    }
+  });
+});
 
 /* ---------- List rendering ---------- */
-const listContainer = document.getElementById('list-container');
-const newTaskInput = document.getElementById('new-task-input');
-
-function renderList(){
-  listContainer.innerHTML = '';
-  if(state.tasks.length === 0){
+function renderListView(listId){
+  const section = document.getElementById('view-' + listId);
+  const container = section.querySelector('.list-container');
+  const tasks = state.lists[listId].tasks;
+  container.innerHTML = '';
+  if(tasks.length === 0){
     const hint = document.createElement('div');
     hint.className = 'empty-hint';
-    hint.textContent = '아래 입력창에 할 일을 적고 Enter를 누르면\n체크리스트가 시작돼요.';
-    listContainer.appendChild(hint);
+    hint.textContent = listId === 'project'
+      ? '프로젝트 이름을 적고 Enter를 누른 뒤,\n＋ 버튼으로 관련 할 일을 추가해보세요.'
+      : '아래 입력창에 할 일을 적고 Enter를 누르면\n체크리스트가 시작돼요.';
+    container.appendChild(hint);
     return;
   }
-  state.tasks.forEach(task => {
-    listContainer.appendChild(renderTask(task));
-  });
+  tasks.forEach((task, idx) => container.appendChild(renderTask(listId, task, idx, tasks.length)));
 }
 
-function renderTask(task){
+function renderTask(listId, task, idx, total){
+  const key = `${listId}:${task.id}`;
   const wrap = document.createElement('div');
   wrap.className = 'task';
 
   const row = document.createElement('div');
   row.className = 'task-row';
 
+  const reorder = makeReorderBtns(
+    () => { moveTask(listId, idx, -1); },
+    () => { moveTask(listId, idx, 1); },
+    idx, total
+  );
+
   const box = document.createElement('div');
   box.className = 'checkbox';
   box.innerHTML = checkSvg;
-  box.onclick = () => completeTask(task.id);
+  box.onclick = () => completeTask(listId, task.id);
 
-  const text = document.createElement('div');
-  text.className = 'task-text';
-  text.textContent = task.text;
+  let textEl;
+  if(editingKey === key){
+    textEl = document.createElement('input');
+    textEl.className = 'edit-input';
+    textEl.value = task.text;
+    textEl.onkeydown = (e) => {
+      if(e.key === 'Enter'){ commitEdit(listId, task.id, null, textEl.value); }
+      if(e.key === 'Escape'){ editingKey = null; renderListView(listId); }
+    };
+    textEl.onblur = () => commitEdit(listId, task.id, null, textEl.value);
+  } else {
+    textEl = document.createElement('div');
+    textEl.className = 'task-text';
+    textEl.textContent = task.text;
+  }
 
   const actions = document.createElement('div');
   actions.className = 'task-actions';
+  const editBtn = document.createElement('button');
+  editBtn.className = 'icon-btn';
+  editBtn.textContent = '✎';
+  editBtn.title = '수정';
+  editBtn.onclick = () => { editingKey = key; renderListView(listId); };
   const addSubBtn = document.createElement('button');
   addSubBtn.className = 'icon-btn';
   addSubBtn.textContent = '＋';
   addSubBtn.title = '하위 할일 추가';
-  addSubBtn.onclick = () => toggleSubInput(task.id);
+  addSubBtn.onclick = () => { subInputOpenFor = (subInputOpenFor === key) ? null : key; renderListView(listId); };
   const delBtn = document.createElement('button');
   delBtn.className = 'icon-btn';
   delBtn.textContent = '✕';
   delBtn.title = '삭제';
-  delBtn.onclick = () => deleteTask(task.id);
+  delBtn.onclick = () => deleteTask(listId, task.id);
+  actions.appendChild(editBtn);
   actions.appendChild(addSubBtn);
   actions.appendChild(delBtn);
 
+  row.appendChild(reorder);
   row.appendChild(box);
-  row.appendChild(text);
+  row.appendChild(textEl);
   row.appendChild(actions);
   wrap.appendChild(row);
 
   const subWrap = document.createElement('div');
   subWrap.className = 'subtasks';
-  subWrap.id = `sub-${task.id}`;
 
-  (task.subtasks || []).forEach(sub => {
-    subWrap.appendChild(renderSubtask(task.id, sub));
-  });
+  const subs = task.subtasks || [];
+  subs.forEach((sub, sidx) => subWrap.appendChild(renderSubtask(listId, task.id, sub, sidx, subs.length)));
 
-  if(task._showSubInput){
+  if(subInputOpenFor === key){
     const inputRow = document.createElement('div');
     inputRow.className = 'subtask-input-row';
     const dashBox = document.createElement('div');
@@ -447,8 +543,7 @@ function renderTask(task){
     input.autocomplete = 'off';
     input.onkeydown = (e) => {
       if(e.key === 'Enter' && input.value.trim()){
-        addSubtask(task.id, input.value.trim());
-        input.value = '';
+        addSubtask(listId, task.id, input.value.trim());
       }
     };
     inputRow.appendChild(dashBox);
@@ -464,96 +559,162 @@ function renderTask(task){
   return wrap;
 }
 
-function renderSubtask(taskId, sub){
+function renderSubtask(listId, taskId, sub, idx, total){
+  const key = `${listId}:${taskId}:${sub.id}`;
   const row = document.createElement('div');
   row.className = 'subtask';
+
+  const reorder = makeReorderBtns(
+    () => { moveSubtask(listId, taskId, idx, -1); },
+    () => { moveSubtask(listId, taskId, idx, 1); },
+    idx, total
+  );
+
   const box = document.createElement('div');
   box.className = 'checkbox';
   box.innerHTML = checkSvg;
-  box.onclick = () => completeSubtask(taskId, sub.id);
-  const text = document.createElement('div');
-  text.className = 'task-text';
-  text.textContent = sub.text;
+  box.onclick = () => completeSubtask(listId, taskId, sub.id);
+
+  let textEl;
+  if(editingKey === key){
+    textEl = document.createElement('input');
+    textEl.className = 'edit-input';
+    textEl.value = sub.text;
+    textEl.onkeydown = (e) => {
+      if(e.key === 'Enter'){ commitEdit(listId, taskId, sub.id, textEl.value); }
+      if(e.key === 'Escape'){ editingKey = null; renderListView(listId); }
+    };
+    textEl.onblur = () => commitEdit(listId, taskId, sub.id, textEl.value);
+  } else {
+    textEl = document.createElement('div');
+    textEl.className = 'task-text';
+    textEl.textContent = sub.text;
+  }
+
+  const editBtn = document.createElement('button');
+  editBtn.className = 'icon-btn';
+  editBtn.textContent = '✎';
+  editBtn.onclick = () => { editingKey = key; renderListView(listId); };
   const delBtn = document.createElement('button');
   delBtn.className = 'icon-btn';
   delBtn.textContent = '✕';
-  delBtn.onclick = () => deleteSubtask(taskId, sub.id);
+  delBtn.onclick = () => deleteSubtask(listId, taskId, sub.id);
+
+  row.appendChild(reorder);
   row.appendChild(box);
-  row.appendChild(text);
+  row.appendChild(textEl);
+  row.appendChild(editBtn);
   row.appendChild(delBtn);
   return row;
 }
 
-/* ---------- Actions ---------- */
-newTaskInput.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' && newTaskInput.value.trim()){
-    const t = { id: uid(), text: newTaskInput.value.trim(), subtasks: [] };
-    state.tasks.push(t);
-    save();
-    newTaskInput.value = '';
-    renderList();
-    newTaskInput.focus();
-  }
-});
-
-function toggleSubInput(taskId){
-  const t = state.tasks.find(t => t.id === taskId);
-  if(t){ t._showSubInput = !t._showSubInput; renderList(); }
+function makeReorderBtns(onUp, onDown, idx, total){
+  const wrap = document.createElement('div');
+  wrap.className = 'reorder-btns';
+  const up = document.createElement('button');
+  up.className = 'icon-btn reorder-btn';
+  up.textContent = '▲';
+  up.disabled = idx === 0;
+  up.onclick = onUp;
+  const down = document.createElement('button');
+  down.className = 'icon-btn reorder-btn';
+  down.textContent = '▼';
+  down.disabled = idx === total - 1;
+  down.onclick = onDown;
+  wrap.appendChild(up);
+  wrap.appendChild(down);
+  return wrap;
 }
 
-function addSubtask(taskId, text){
-  const t = state.tasks.find(t => t.id === taskId);
+/* ---------- Actions ---------- */
+function moveTask(listId, idx, dir){
+  const tasks = state.lists[listId].tasks;
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= tasks.length) return;
+  [tasks[idx], tasks[newIdx]] = [tasks[newIdx], tasks[idx]];
+  save();
+  renderListView(listId);
+}
+
+function moveSubtask(listId, taskId, idx, dir){
+  const t = state.lists[listId].tasks.find(t => t.id === taskId);
+  if(!t) return;
+  const subs = t.subtasks || [];
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= subs.length) return;
+  [subs[idx], subs[newIdx]] = [subs[newIdx], subs[idx]];
+  save();
+  renderListView(listId);
+}
+
+function commitEdit(listId, taskId, subId, value){
+  const trimmed = value.trim();
+  const t = state.lists[listId].tasks.find(t => t.id === taskId);
+  if(t){
+    if(subId){
+      const s = (t.subtasks || []).find(s => s.id === subId);
+      if(s && trimmed) s.text = trimmed;
+    } else if(trimmed){
+      t.text = trimmed;
+    }
+  }
+  editingKey = null;
+  save();
+  renderListView(listId);
+}
+
+function addSubtask(listId, taskId, text){
+  const t = state.lists[listId].tasks.find(t => t.id === taskId);
   if(!t) return;
   t.subtasks = t.subtasks || [];
   t.subtasks.push({ id: uid(), text });
-  t._showSubInput = true;
   save();
-  renderList();
+  renderListView(listId);
 }
 
-function deleteSubtask(taskId, subId){
-  const t = state.tasks.find(t => t.id === taskId);
+function deleteSubtask(listId, taskId, subId){
+  const t = state.lists[listId].tasks.find(t => t.id === taskId);
   if(!t) return;
   t.subtasks = (t.subtasks || []).filter(s => s.id !== subId);
   save();
-  renderList();
+  renderListView(listId);
 }
 
-function deleteTask(taskId){
-  state.tasks = state.tasks.filter(t => t.id !== taskId);
+function deleteTask(listId, taskId){
+  state.lists[listId].tasks = state.lists[listId].tasks.filter(t => t.id !== taskId);
   save();
-  renderList();
+  renderListView(listId);
 }
 
-function completeSubtask(taskId, subId){
-  const t = state.tasks.find(t => t.id === taskId);
+function completeSubtask(listId, taskId, subId){
+  const t = state.lists[listId].tasks.find(t => t.id === taskId);
   if(!t) return;
   const sub = (t.subtasks || []).find(s => s.id === subId);
   if(!sub) return;
   const now = new Date();
   state.records.push({
-    id: uid(), text: sub.text, parentText: t.text,
+    id: uid(), text: sub.text, parentText: t.text, listId,
     date: dateKey(now), time: timeLabel(now), ts: now.getTime()
   });
   t.subtasks = t.subtasks.filter(s => s.id !== subId);
   save();
-  renderList();
+  renderListView(listId);
 }
 
-function completeTask(taskId){
-  const t = state.tasks.find(t => t.id === taskId);
+function completeTask(listId, taskId){
+  const t = state.lists[listId].tasks.find(t => t.id === taskId);
   if(!t) return;
   const now = new Date();
   state.records.push({
-    id: uid(), text: t.text, parentText: null,
+    id: uid(), text: t.text, parentText: null, listId,
     date: dateKey(now), time: timeLabel(now), ts: now.getTime()
   });
   // 남은 하위 할일은 독립된 할 일로 승격
   const leftoverSubs = (t.subtasks || []).map(s => ({ id: uid(), text: s.text, subtasks: [] }));
-  state.tasks = state.tasks.filter(task => task.id !== taskId);
-  state.tasks.push(...leftoverSubs);
+  state.lists[listId].tasks = state.lists[listId].tasks.filter(task => task.id !== taskId);
+  state.lists[listId].tasks.push(...leftoverSubs);
   save();
-  renderList();
+  renderListView(listId);
 }
 
 /* ---------- Calendar ---------- */
@@ -649,7 +810,11 @@ function renderCalendar(){
       time.textContent = r.time;
       const text = document.createElement('div');
       text.className = 'text';
-      text.textContent = r.text;
+      const badge = document.createElement('span');
+      badge.className = 'list-badge list-badge-' + (r.listId || 'personal');
+      badge.textContent = LIST_LABELS[r.listId] || '개인';
+      text.appendChild(badge);
+      text.appendChild(document.createTextNode(' ' + r.text));
       if(r.parentText){
         const tag = document.createElement('span');
         tag.className = 'parent-tag';
