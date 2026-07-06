@@ -98,8 +98,13 @@
   .task-row{
     display:flex; align-items:flex-start; gap:8px;
   }
-  .reorder-btns{
-    display:flex; flex-direction:column; gap:0px; margin-top:0px;
+.reorder-btns {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;           
+    align-items: center;
+    order: 2;           
+    margin-left: auto;  
   }
   .reorder-btn{
     font-size:9px; padding:1px 4px; color:var(--ink-soft); line-height:1.3;
@@ -520,9 +525,9 @@ function renderTask(listId, task, idx, total){
   actions.appendChild(addSubBtn);
   actions.appendChild(delBtn);
 
-  row.appendChild(reorder);
   row.appendChild(box);
   row.appendChild(textEl);
+  row.appendChild(reorder);
   row.appendChild(actions);
   wrap.appendChild(row);
 
@@ -600,9 +605,9 @@ function renderSubtask(listId, taskId, sub, idx, total){
   delBtn.textContent = '✕';
   delBtn.onclick = () => deleteSubtask(listId, taskId, sub.id);
 
-  row.appendChild(reorder);
   row.appendChild(box);
   row.appendChild(textEl);
+  row.appendChild(reorder);
   row.appendChild(editBtn);
   row.appendChild(delBtn);
   return row;
