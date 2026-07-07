@@ -1,5 +1,5 @@
 window.firebaseConfig = {
-  apiKey: "AIzaSyAeIeEi3rbGxdBdppxB1LQYcNebWLmGiNU",
+  apiKey: "AIzaSyBHUGTdbgekXFdpWj06k9HBBx6GJBUWEFU",
   authDomain: "to-do-list-b78b2.firebaseapp.com",
   projectId: "to-do-list-b78b2",
   storageBucket: "to-do-list-b78b2.firebasestorage.app",
