@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#3D6B5C">
-<title>To Do List</title>
+<title>To do List</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <script src="firebase-config.js"></script>
@@ -98,13 +98,8 @@
   .task-row{
     display:flex; align-items:flex-start; gap:8px;
   }
-.reorder-btns {
-    display: flex;
-    flex-direction: row;
-    gap: 2px;           
-    align-items: center;
-    order: 2;           
-    margin-left: auto;  
+  .reorder-btns{
+    display:flex; flex-direction:column; gap:0px; margin-top:0px;
   }
   .reorder-btn{
     font-size:9px; padding:1px 4px; color:var(--ink-soft); line-height:1.3;
@@ -114,11 +109,18 @@
     width:22px; height:22px; min-width:22px; margin-top:2px;
     border:2px solid var(--accent); border-radius:6px;
     display:flex; align-items:center; justify-content:center;
-    cursor:pointer; background:var(--paper);
+    cursor:pointer; background:var(--paper); color:var(--accent);
     transition: background .15s, transform .1s;
   }
   .checkbox:active{ transform:scale(0.9); }
   .checkbox svg{ width:14px; height:14px; opacity:0; transition:opacity .1s; }
+  .checkbox.checked{ background:var(--accent); color:#fff; }
+  .checkbox.checked svg{ opacity:1; }
+  .section-label{
+    font-family:'Space Grotesk', sans-serif; font-size:12px; font-weight:700;
+    color:var(--ink-soft); padding:14px 16px 2px; letter-spacing:0.02em;
+  }
+  .section-divider{ height:1px; background:var(--line); margin:6px 16px 2px; }
   .task-text{
     flex:1; font-size:15.5px; line-height:1.5; padding-top:1px;
     word-break: break-word;
@@ -239,6 +241,13 @@
   .list-badge-work{ background:var(--work-soft); color:var(--work); }
   .list-badge-project{ background:var(--project-soft); color:var(--project); }
   .no-record{ color:var(--ink-soft); font-size:13px; padding:12px 0; }
+  .record-item{ align-items:center; }
+  .record-edit-btn{ margin-left:auto; }
+  .record-date-input{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; border:1px solid var(--line);
+    border-radius:6px; padding:3px 4px; color:var(--ink); background:var(--paper);
+    min-width:44px;
+  }
 
   ::-webkit-scrollbar{ width:0; }
 
@@ -264,7 +273,7 @@
 </head>
 <body>
 <div id="login-overlay">
-  <h2>오늘의 체크리스트</h2>
+  <h2>To do List</h2>
   <p>Google 계정으로 로그인하면 휴대폰, 노트북 등 어떤 기기에서든 같은 할 일 목록과 기록이 실시간으로 동기화돼요.</p>
   <button id="login-btn">
     <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.4 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.4 5.1 29.5 3 24 3c-7.5 0-14 4.2-17.7 10.7z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.3-1.9 14-5.1l-6.5-5.5C29.4 36.1 26.8 37 24 37c-5.3 0-9.7-3.1-11.3-7.6l-6.6 5.1C9.9 40.7 16.4 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.5 5.5C41.4 36.1 45 30.5 45 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
@@ -273,7 +282,7 @@
 </div>
 <div id="app">
   <header>
-    <h1>오늘의 체크리스트</h1>
+    <h1>To do List</h1>
     <div class="date" id="today-label"></div>
   </header>
   <div class="sync-bar">
@@ -288,6 +297,16 @@
   </nav>
   <main>
     <section id="view-personal" class="view active" data-list="personal">
+      <div class="section-label">매일 할 일</div>
+      <div class="habit-container"></div>
+      <div style="padding:0 16px;">
+        <div class="new-task-row">
+          <div class="checkbox"></div>
+          <input id="new-habit-input" type="text" placeholder="매일 할 일 입력 후 Enter (예: 비타민 먹기)" autocomplete="off">
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="section-label">오늘 할 일</div>
       <div class="list-container"></div>
       <div style="padding:0 16px;">
         <div class="new-task-row">
@@ -338,26 +357,28 @@ const LISTS = ['personal','work','project'];
 const LIST_LABELS = { personal:'개인', work:'직장', project:'프로젝트' };
 
 function emptyState(){
-  return { lists: { personal:{tasks:[]}, work:{tasks:[]}, project:{tasks:[]} }, records: [] };
+  return { lists: { personal:{tasks:[],habits:[]}, work:{tasks:[]}, project:{tasks:[]} }, records: [] };
 }
 let state = emptyState();
 let currentUid = null;
 let unsubscribeSnap = null;
 
 // 화면에만 존재하는 임시 상태 (동기화 데이터에는 저장 안 함)
-let editingKey = null;      // "listId:taskId" 또는 "listId:taskId:subId"
+let editingKey = null;      // "listId:taskId" 또는 "listId:taskId:subId" 또는 "habit:habitId"
 let subInputOpenFor = null; // "listId:taskId"
+let editingRecordId = null; // 기록 탭에서 날짜를 수정 중인 record.id
 
 function migrate(data){
   if(data.tasks && !data.lists){
     // 이전 버전(단일 목록) 데이터를 개인 목록으로 이전
     return {
-      lists: { personal:{ tasks:data.tasks }, work:{ tasks:[] }, project:{ tasks:[] } },
+      lists: { personal:{ tasks:data.tasks, habits:[] }, work:{ tasks:[] }, project:{ tasks:[] } },
       records: (data.records||[]).map(r => ({ ...r, listId: r.listId || 'personal' }))
     };
   }
   data.lists = data.lists || {};
   LISTS.forEach(id => { if(!data.lists[id]) data.lists[id] = { tasks: [] }; });
+  data.lists.personal.habits = data.lists.personal.habits || [];
   data.records = data.records || [];
   return data;
 }
@@ -407,6 +428,7 @@ function save(){
 }
 function renderAll(){
   LISTS.forEach(renderListView);
+  renderHabits();
   if(document.getElementById('view-calendar').classList.contains('active')) renderCalendar();
 }
 
@@ -450,6 +472,139 @@ document.querySelectorAll('.new-task-input').forEach(input => {
     }
   });
 });
+
+/* ---------- 매일 할 일 (habits) ---------- */
+const newHabitInput = document.getElementById('new-habit-input');
+newHabitInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && newHabitInput.value.trim()){
+    state.lists.personal.habits = state.lists.personal.habits || [];
+    state.lists.personal.habits.push({ id: uid(), text: newHabitInput.value.trim(), completedDates: [] });
+    save();
+    newHabitInput.value = '';
+    renderHabits();
+  }
+});
+
+function renderHabits(){
+  const container = document.querySelector('#view-personal .habit-container');
+  const habits = state.lists.personal.habits || [];
+  container.innerHTML = '';
+  if(habits.length === 0){
+    const hint = document.createElement('div');
+    hint.className = 'empty-hint';
+    hint.style.padding = '12px 4px 18px';
+    hint.textContent = '매일 반복할 일을 추가해보세요.\n체크해도 사라지지 않고, 다음 날 다시 체크할 수 있어요.';
+    container.appendChild(hint);
+    return;
+  }
+  habits.forEach((h, idx) => container.appendChild(renderHabit(h, idx, habits.length)));
+}
+
+function renderHabit(habit, idx, total){
+  const key = `habit:${habit.id}`;
+  const todayKey = dateKey(new Date());
+  const doneToday = (habit.completedDates || []).includes(todayKey);
+
+  const row = document.createElement('div');
+  row.className = 'task-row';
+  row.style.padding = '10px 0';
+  row.style.borderBottom = '1px dashed var(--line)';
+
+  const reorder = makeReorderBtns(
+    () => moveHabit(idx, -1),
+    () => moveHabit(idx, 1),
+    idx, total
+  );
+
+  const box = document.createElement('div');
+  box.className = 'checkbox' + (doneToday ? ' checked' : '');
+  box.innerHTML = checkSvg;
+  box.onclick = () => toggleHabit(habit.id);
+
+  let textEl;
+  if(editingKey === key){
+    textEl = document.createElement('input');
+    textEl.className = 'edit-input';
+    textEl.value = habit.text;
+    textEl.onkeydown = (e) => {
+      if(e.key === 'Enter'){ commitHabitEdit(habit.id, textEl.value); }
+      if(e.key === 'Escape'){ editingKey = null; renderHabits(); }
+    };
+    textEl.onblur = () => commitHabitEdit(habit.id, textEl.value);
+  } else {
+    textEl = document.createElement('div');
+    textEl.className = 'task-text';
+    if(doneToday) textEl.style.opacity = '0.5';
+    textEl.textContent = habit.text;
+  }
+
+  const actions = document.createElement('div');
+  actions.className = 'task-actions';
+  const editBtn = document.createElement('button');
+  editBtn.className = 'icon-btn';
+  editBtn.textContent = '✎';
+  editBtn.title = '수정';
+  editBtn.onclick = () => { editingKey = key; renderHabits(); };
+  const delBtn = document.createElement('button');
+  delBtn.className = 'icon-btn';
+  delBtn.textContent = '✕';
+  delBtn.title = '삭제';
+  delBtn.onclick = () => deleteHabit(habit.id);
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+
+  row.appendChild(reorder);
+  row.appendChild(box);
+  row.appendChild(textEl);
+  row.appendChild(actions);
+  return row;
+}
+
+function moveHabit(idx, dir){
+  const habits = state.lists.personal.habits;
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= habits.length) return;
+  [habits[idx], habits[newIdx]] = [habits[newIdx], habits[idx]];
+  save();
+  renderHabits();
+}
+
+function commitHabitEdit(habitId, value){
+  const trimmed = value.trim();
+  const h = state.lists.personal.habits.find(h => h.id === habitId);
+  if(h && trimmed) h.text = trimmed;
+  editingKey = null;
+  save();
+  renderHabits();
+}
+
+function deleteHabit(habitId){
+  state.lists.personal.habits = state.lists.personal.habits.filter(h => h.id !== habitId);
+  save();
+  renderHabits();
+}
+
+function toggleHabit(habitId){
+  const h = state.lists.personal.habits.find(h => h.id === habitId);
+  if(!h) return;
+  const todayKey = dateKey(new Date());
+  h.completedDates = h.completedDates || [];
+  const idx = h.completedDates.indexOf(todayKey);
+  if(idx === -1){
+    h.completedDates.push(todayKey);
+    const now = new Date();
+    state.records.push({
+      id: uid(), text: h.text, parentText: null, listId: 'personal', habitId: h.id,
+      date: todayKey, time: timeLabel(now), ts: now.getTime()
+    });
+  } else {
+    h.completedDates.splice(idx, 1);
+    const ridx = state.records.findIndex(r => r.habitId === h.id && r.date === todayKey);
+    if(ridx !== -1) state.records.splice(ridx, 1);
+  }
+  save();
+  renderHabits();
+}
 
 /* ---------- List rendering ---------- */
 function renderListView(listId){
@@ -525,9 +680,9 @@ function renderTask(listId, task, idx, total){
   actions.appendChild(addSubBtn);
   actions.appendChild(delBtn);
 
+  row.appendChild(reorder);
   row.appendChild(box);
   row.appendChild(textEl);
-  row.appendChild(reorder);
   row.appendChild(actions);
   wrap.appendChild(row);
 
@@ -605,9 +760,9 @@ function renderSubtask(listId, taskId, sub, idx, total){
   delBtn.textContent = '✕';
   delBtn.onclick = () => deleteSubtask(listId, taskId, sub.id);
 
+  row.appendChild(reorder);
   row.appendChild(box);
   row.appendChild(textEl);
-  row.appendChild(reorder);
   row.appendChild(editBtn);
   row.appendChild(delBtn);
   return row;
@@ -810,28 +965,75 @@ function renderCalendar(){
     dayRecords.forEach(r => {
       const item = document.createElement('div');
       item.className = 'record-item';
-      const time = document.createElement('div');
-      time.className = 'time';
-      time.textContent = r.time;
-      const text = document.createElement('div');
-      text.className = 'text';
-      const badge = document.createElement('span');
-      badge.className = 'list-badge list-badge-' + (r.listId || 'personal');
-      badge.textContent = LIST_LABELS[r.listId] || '개인';
-      text.appendChild(badge);
-      text.appendChild(document.createTextNode(' ' + r.text));
-      if(r.parentText){
-        const tag = document.createElement('span');
-        tag.className = 'parent-tag';
-        tag.textContent = `↳ ${r.parentText}의 하위 할일`;
-        text.appendChild(tag);
+
+      if(editingRecordId === r.id){
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.className = 'record-date-input';
+        dateInput.value = r.date;
+        dateInput.max = todayKey;
+        dateInput.onchange = () => {
+          if(dateInput.value) commitRecordDate(r.id, dateInput.value);
+        };
+        const text = document.createElement('div');
+        text.className = 'text';
+        text.appendChild(document.createTextNode(r.text));
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'icon-btn record-edit-btn';
+        cancelBtn.textContent = '✕';
+        cancelBtn.onclick = () => { editingRecordId = null; renderCalendar(); };
+        item.appendChild(dateInput);
+        item.appendChild(text);
+        item.appendChild(cancelBtn);
+        setTimeout(() => { try{ dateInput.showPicker && dateInput.showPicker(); }catch(e){} }, 0);
+      } else {
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = r.time;
+        const text = document.createElement('div');
+        text.className = 'text';
+        const badge = document.createElement('span');
+        badge.className = 'list-badge list-badge-' + (r.listId || 'personal');
+        badge.textContent = LIST_LABELS[r.listId] || '개인';
+        text.appendChild(badge);
+        text.appendChild(document.createTextNode(' ' + r.text));
+        if(r.parentText){
+          const tag = document.createElement('span');
+          tag.className = 'parent-tag';
+          tag.textContent = `↳ ${r.parentText}의 하위 할일`;
+          text.appendChild(tag);
+        } else if(r.habitId){
+          const tag = document.createElement('span');
+          tag.className = 'parent-tag';
+          tag.textContent = '🔁 매일 할 일';
+          text.appendChild(tag);
+        }
+        const editBtn = document.createElement('button');
+        editBtn.className = 'icon-btn record-edit-btn';
+        editBtn.textContent = '✎';
+        editBtn.title = '날짜 옮기기';
+        editBtn.onclick = () => { editingRecordId = r.id; renderCalendar(); };
+        item.appendChild(time);
+        item.appendChild(text);
+        item.appendChild(editBtn);
       }
-      item.appendChild(time);
-      item.appendChild(text);
       detail.appendChild(item);
     });
   }
   calContainer.appendChild(detail);
+}
+
+function commitRecordDate(recordId, newDateStr){
+  const r = state.records.find(rec => rec.id === recordId);
+  if(!r) return;
+  r.date = newDateStr;
+  r.time = '23:59';
+  const [y, m, d] = newDateStr.split('-').map(Number);
+  r.ts = new Date(y, m - 1, d, 23, 59, 0).getTime();
+  editingRecordId = null;
+  selectedDateKey = newDateStr;
+  save();
+  renderCalendar();
 }
 
 /* ---------- Init ---------- */
